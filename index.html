@@ -1,82 +1,73 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>in bitro — Crear semilla</title>
-<style>
-  body { font-family: Arial, sans-serif; background:#f3f3f3; }
-  .box { max-width:420px; margin:40px auto; background:#fff; padding:18px; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,0.08); }
-  input, button { width:100%; padding:12px; margin-top:8px; font-size:16px; }
-  #status { margin-top:12px; font-weight:600; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>In-Bitro | Semilla</title>
+
+  <style>
+    body {
+      background: #111;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+
+    #container {
+      max-width: 350px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 12px;
+      background: #222;
+      box-shadow: 0 0 10px rgba(255,255,255,0.05);
+    }
+
+    input {
+      width: 90%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #4caf50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #45a049;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #9f9;
+    }
+  </style>
 </head>
 <body>
-  <div class="box">
-    <h2>Crear tu semilla</h2>
-    <p>Ingresá tu nombre para generar tu planta digital.</p>
 
-    <input id="nameField" type="text" placeholder="Tu nombre (ej: Ana)">
-    <button id="createBtn">Crear semilla</button>
+  <div id="container">
+    <h1>✨ Creá tu Semilla</h1>
+    <p>Escribí tu nombre para generar una semilla única.</p>
+
+    <input type="text" id="nameField" placeholder="Tu nombre" />
+
+    <button id="createBtn">Crear Semilla</button>
 
     <p id="status"></p>
   </div>
 
-<script>
-const BACKEND = "https://in-bitro-backend.onrender.com"; // <-- reemplazá por tu URL final
-
-async function getUserInfo() {
-  try {
-    const res = await fetch(BACKEND + "/userdata");
-    return await res.json();
-  } catch (e) {
-    return { ip: null, isp: null, country: null, city: null };
-  }
-}
-
-async function testLatency() {
-  try {
-    const t0 = performance.now();
-    await fetch(BACKEND + "/userdata?ts=" + Date.now());
-    const t1 = performance.now();
-    return Math.round(t1 - t0);
-  } catch (e) {
-    return null;
-  }
-}
-
-async function sendSeed(seed) {
-  await fetch(BACKEND + "/sendSeed", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(seed)
-  });
-}
-
-document.getElementById("createBtn").addEventListener("click", async () => {
-  const name = document.getElementById("nameField").value.trim();
-  if (!name) { alert("Ingresá un nombre"); return; }
-
-  document.getElementById("status").innerText = "CREANDO SEMILLA…";
-
-  const info = await getUserInfo();
-  const latency = await testLatency();
-
-  const seed = {
-    name: name,
-    ip: info.ip,
-    isp: info.isp,
-    country: info.country,
-    city: info.city,
-    latency: latency,
-    timestamp: Date.now()
-  };
-
-  await sendSeed(seed);
-
-  document.getElementById("status").innerText = "¡Tu semilla fue enviada! Mirá la pantalla para ver crecer tu planta 🌱";
-});
-</script>
+  <!-- Enlace al script externo -->
+  <script src="script.js"></script>
 </body>
 </html>
-
