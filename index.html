@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>in bitro — Crear semilla</title>
+<style>
+  body { font-family: Arial, sans-serif; background:#f3f3f3; }
+  .box { max-width:420px; margin:40px auto; background:#fff; padding:18px; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,0.08); }
+  input, button { width:100%; padding:12px; margin-top:8px; font-size:16px; }
+  #status { margin-top:12px; font-weight:600; }
+</style>
+</head>
+<body>
+  <div class="box">
+    <h2>Crear tu semilla</h2>
+    <p>Ingresá tu nombre para generar tu planta digital.</p>
+
+    <input id="nameField" type="text" placeholder="Tu nombre (ej: Ana)">
+    <button id="createBtn">Crear semilla</button>
+
+    <p id="status"></p>
+  </div>
+
+<script>
+const BACKEND = "https://TU-BACKEND.onrender.com"; // <-- reemplazá por tu URL final
+
+async function getUserInfo() {
+  try {
+    const res = await fetch(BACKEND + "/userdata");
+    return await res.json();
+  } catch (e) {
+    return { ip: null, isp: null, country: null, city: null };
+  }
+}
+
+async function testLatency() {
+  try {
+    const t0 = performance.now();
+    await fetch(BACKEND + "/userdata?ts=" + Date.now());
+    const t1 = performance.now();
+    return Math.round(t1 - t0);
+  } catch (e) {
+    return null;
+  }
+}
+
+async function sendSeed(seed) {
+  await fetch(BACKEND + "/sendSeed", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(seed)
+  });
+}
+
+document.getElementById("createBtn").addEventListener("click", async () => {
+  const name = document.getElementById("nameField").value.trim();
+  if (!name) { alert("Ingresá un nombre"); return; }
+
+  document.getElementById("status").innerText = "CREANDO SEMILLA…";
+
+  const info = await getUserInfo();
+  const latency = await testLatency();
+
+  const seed = {
+    name: name,
+    ip: info.ip,
+    isp: info.isp,
+    country: info.country,
+    city: info.city,
+    latency: latency,
+    timestamp: Date.now()
+  };
+
+  await sendSeed(seed);
+
+  document.getElementById("status").innerText = "¡Tu semilla fue enviada! Mirá la pantalla para ver crecer tu planta 🌱";
+});
+</script>
+</body>
+</html>
